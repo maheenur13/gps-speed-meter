@@ -2,16 +2,17 @@
  * History Screen - Trip History List
  */
 
-import React, { useState, useCallback } from 'react';
-import { View, StyleSheet, RefreshControl } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { FlashList } from '@shopify/flash-list';
-import { useRouter, useFocusEffect } from 'expo-router';
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { FlashList } from "@shopify/flash-list";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
+import { RefreshControl, StyleSheet, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { TripCard } from '@/components/trip';
-import { ThemedText } from '@/components/themed-text';
-import { initDatabase, getAllTrips } from '@/database';
-import type { TripWithDuration } from '@/types';
+import { ThemedText } from "@/components/themed-text";
+import { TripCard } from "@/components/trip";
+import { getAllTrips, initDatabase } from "@/database";
+import type { TripWithDuration } from "@/types";
 
 export default function HistoryScreen() {
   const insets = useSafeAreaInsets();
@@ -26,7 +27,7 @@ export default function HistoryScreen() {
       const allTrips = await getAllTrips(db);
       setTrips(allTrips);
     } catch (error) {
-      console.error('Error loading trips:', error);
+      console.error("Error loading trips:", error);
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -51,10 +52,7 @@ export default function HistoryScreen() {
 
   const renderItem = useCallback(
     ({ item }: { item: TripWithDuration }) => (
-      <TripCard
-        trip={item}
-        onPress={() => handleTripPress(item.id)}
-      />
+      <TripCard trip={item} onPress={() => handleTripPress(item.id)} />
     ),
     []
   );
@@ -62,11 +60,12 @@ export default function HistoryScreen() {
   const renderEmptyState = () => (
     <View style={styles.emptyContainer}>
       <View style={styles.emptyIcon}>
-        <ThemedText style={styles.emptyIconText}>🗺️</ThemedText>
+        <MaterialCommunityIcons name="map-marker-path" size={40} color="#22c55e" />
       </View>
       <ThemedText style={styles.emptyTitle}>No Trips Yet</ThemedText>
       <ThemedText style={styles.emptyDescription}>
-        Start your first trip from the home screen to see your journey history here.
+        Start your first trip from the home screen to see your journey history
+        here.
       </ThemedText>
     </View>
   );
@@ -74,14 +73,16 @@ export default function HistoryScreen() {
   const renderHeader = () => (
     <View style={styles.listHeader}>
       <ThemedText style={styles.listHeaderText}>
-        {trips.length} {trips.length === 1 ? 'Trip' : 'Trips'}
+        {trips.length} {trips.length === 1 ? "Trip" : "Trips"}
       </ThemedText>
     </View>
   );
 
   if (isLoading) {
     return (
-      <View style={[styles.container, styles.centered, { paddingTop: insets.top }]}>
+      <View
+        style={[styles.container, styles.centered, { paddingTop: insets.top }]}
+      >
         <ThemedText style={styles.loadingText}>Loading trips...</ThemedText>
       </View>
     );
@@ -121,11 +122,11 @@ export default function HistoryScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0f0f12',
+    backgroundColor: "#0f0f12",
   },
   centered: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   header: {
     paddingHorizontal: 16,
@@ -133,8 +134,8 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    fontWeight: '800',
-    color: '#fafafa',
+    fontWeight: "800",
+    color: "#fafafa",
   },
   listContent: {
     paddingBottom: 20,
@@ -145,41 +146,38 @@ const styles = StyleSheet.create({
   },
   listHeaderText: {
     fontSize: 13,
-    fontWeight: '500',
-    color: '#71717a',
+    fontWeight: "500",
+    color: "#71717a",
   },
   loadingText: {
     fontSize: 16,
-    color: '#71717a',
+    color: "#71717a",
   },
   emptyContainer: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingHorizontal: 32,
   },
   emptyIcon: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#18181b',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#18181b",
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: 20,
-  },
-  emptyIconText: {
-    fontSize: 36,
   },
   emptyTitle: {
     fontSize: 20,
-    fontWeight: '700',
-    color: '#fafafa',
+    fontWeight: "700",
+    color: "#fafafa",
     marginBottom: 8,
   },
   emptyDescription: {
     fontSize: 15,
-    color: '#71717a',
-    textAlign: 'center',
+    color: "#71717a",
+    textAlign: "center",
     lineHeight: 22,
   },
 });
