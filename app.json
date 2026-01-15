@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "gps-speed-meter",
+    "name": "GPS Speed Meter",
     "slug": "gps-speed-meter",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -9,17 +9,33 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ternionloop.gpsspeedmeter",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Allow GPS Speed Meter to access your location for speed measurement.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Allow GPS Speed Meter to track your speed and distance in the background.",
+        "NSLocationAlwaysUsageDescription": "Allow GPS Speed Meter to track your location for accurate speed measurement.",
+        "UIBackgroundModes": ["location"]
+      }
     },
     "android": {
+      "package": "com.ternionloop.gpsspeedmeter",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#1a1a2e",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "FOREGROUND_SERVICE",
+        "FOREGROUND_SERVICE_LOCATION",
+        "POST_NOTIFICATIONS"
+      ]
     },
     "web": {
       "output": "static",
@@ -33,16 +49,40 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
+          "backgroundColor": "#1a1a2e",
           "dark": {
-            "backgroundColor": "#000000"
+            "backgroundColor": "#0f0f1a"
           }
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow GPS Speed Meter to track your speed and distance in the background.",
+          "locationAlwaysPermission": "Allow GPS Speed Meter to track your location for accurate speed measurement.",
+          "locationWhenInUsePermission": "Allow GPS Speed Meter to access your location for speed measurement.",
+          "isAndroidBackgroundLocationEnabled": true,
+          "isAndroidForegroundServiceEnabled": true
+        }
+      ],
+      "expo-sqlite",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "color": "#22c55e"
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "733bcbee-fa24-4310-92f0-a56ab0f789e4"
+      }
     }
   }
 }
