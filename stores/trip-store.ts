@@ -101,8 +101,12 @@ export const useTripStore = create<TripState>()((set, get) => ({
     const state = get();
     const newTotalDistance = state.totalDistance + distance;
     
-    // Calculate average speed
-    const elapsedHours = state.elapsedTime / 3600;
+    // Calculate average speed using fresh elapsed time from tripStartTime
+    // This avoids stale elapsedTime issues
+    const elapsedSeconds = state.tripStartTime 
+      ? (Date.now() - state.tripStartTime) / 1000 
+      : 0;
+    const elapsedHours = elapsedSeconds / 3600;
     const avgSpeed = elapsedHours > 0 
       ? (newTotalDistance / 1000) / elapsedHours 
       : 0;
@@ -122,8 +126,16 @@ export const useTripStore = create<TripState>()((set, get) => ({
   updateElapsedTime: () => {
     const state = get();
     if (state.tripStartTime && state.isTracking && !state.isPaused) {
-      const elapsedTime = Math.floor((Date.now() - state.tripStartTime) / 1000);
-      set({ elapsedTime });
+      const now = Date.now();
+      const elapsedTime = Math.floor((now - state.tripStartTime) / 1000);
+      
+      // Recalculate average speed with fresh elapsed time
+      const elapsedHours = elapsedTime / 3600;
+      const avgSpeed = elapsedHours > 0 
+        ? (state.totalDistance / 1000) / elapsedHours 
+        : 0;
+      
+      set({ elapsedTime, avgSpeed });
     }
   },
 

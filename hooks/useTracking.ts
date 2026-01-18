@@ -153,20 +153,26 @@ export function useTracking() {
     };
   }, [checkForActiveTrip, tripStore.currentSpeed, settings.unit]);
 
-  // Elapsed time timer
+  // Ref for current speed (to avoid stale closure in timer)
+  const currentSpeedRef = useRef(0);
+  useEffect(() => {
+    currentSpeedRef.current = tripStore.currentSpeed;
+  }, [tripStore.currentSpeed]);
+
+  // Elapsed time timer - only depends on isTracking and isPaused
   useEffect(() => {
     if (tripStore.isTracking && !tripStore.isPaused) {
       timerRef.current = setInterval(() => {
+        // Update elapsed time
         tripStore.updateElapsedTime();
 
         // Speed decay: if no GPS update for 3 seconds, assume stationary
         const timeSinceLastUpdate = Date.now() - lastGpsUpdateRef.current;
-        if (timeSinceLastUpdate > 3000 && tripStore.currentSpeed > 0) {
+        if (timeSinceLastUpdate > 3000 && currentSpeedRef.current > 0) {
           console.log("No GPS update for 3s, setting speed to 0");
-          tripStore.updateLocation(
-            tripStore.lastLocation!,
-            0 // Set speed to 0
-          );
+          if (lastLocationRef.current) {
+            tripStore.updateLocation(lastLocationRef.current, 0);
+          }
         }
       }, 1000);
     } else if (timerRef.current) {
@@ -179,12 +185,7 @@ export function useTracking() {
         clearInterval(timerRef.current);
       }
     };
-  }, [
-    tripStore.isTracking,
-    tripStore.isPaused,
-    tripStore.currentSpeed,
-    tripStore.lastLocation,
-  ]);
+  }, [tripStore.isTracking, tripStore.isPaused, tripStore]);
 
   // GPS loss detection
   const checkGpsLoss = useCallback(() => {
@@ -429,7 +430,35 @@ export function useTracking() {
       const currentTripId = tripIdRef.current;
       if (currentTripId) {
         const db = await initDatabase();
+        
+        // Calculate final average speed before completing the trip
+        const finalDistance = totalDistanceRef.current;
+        const tripStartTime = tripStartTimeRef.current;
+        let finalAvgSpeed = 0;
+        
+        if (tripStartTime && finalDistance > 0) {
+          const elapsedSeconds = (Date.now() - tripStartTime) / 1000;
+          const elapsedHours = elapsedSeconds / 3600;
+          if (elapsedHours > 0) {
+            finalAvgSpeed = (finalDistance / 1000) / elapsedHours; // km/h
+          }
+        }
+        
+        // Save final stats to database
+        await updateTripStats(db, currentTripId, {
+          totalDistance: finalDistance,
+          maxSpeed: maxSpeedRef.current,
+          avgSpeed: finalAvgSpeed,
+        });
+        
+        // Then complete the trip
         await completeTrip(db, currentTripId);
+        
+        console.log("Trip completed with stats:", {
+          distance: finalDistance,
+          maxSpeed: maxSpeedRef.current,
+          avgSpeed: finalAvgSpeed,
+        });
       }
 
       // Hide the tracking notification

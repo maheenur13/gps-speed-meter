@@ -11,6 +11,7 @@
     "build:dev-a": "eas build --profile development --platform android",
     "build:prod-a": "eas build --profile production --platform android",
     "build:prod-ios": "eas build --profile production --platform ios",
+    "apk:build": "eas build -p android --profile preview",
     "set:version": "eas build:version:set",
     "submit:ios": "eas submit -p ios --latest",
     "update:prod": "APP_ENV=production eas update --channel production",
